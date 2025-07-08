@@ -22,46 +22,27 @@ public class Inventory {
         this.books = books;
     }
 
-    public void addNewBook(String ISBN, String title, int year, double price, Object extra) {
-        String bookType ;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the number of the book type: ");
-        System.out.println("1. Paper book");
-        System.out.println("2. E-book");
-        System.out.println("3. Demo book(not for sale)");
-        bookType = scanner.nextLine();
-        switch (bookType){
-            case "1":
-                System.out.println("Please enter the book stock: ");
-                int bookStock = scanner.nextInt();
-                Book paperBook = factory.createBook(bookType, ISBN, title, year, price, bookStock);
-                books.put(ISBN, paperBook);
-                break;
-            case "2":
-                System.out.println("Please enter file type of the book: ");
-                String fileType = scanner.nextLine();
-                Book eBook = factory.createBook(bookType, ISBN, title, year, price, fileType);
-                books.put(ISBN, eBook);
-                break;
-            case "3":
-                Book demo = factory.createBook(bookType, ISBN, title, year, price, null);
-                books.put(ISBN, demo);
-        }
+    public void addBook(String bookType, String ISBN, String title, int year, double price, Object extra) {
+        Book book = factory.createBook(bookType, ISBN, title, year, price, extra);
+        books.put(ISBN, book);
     }
 
-    public void removeBooks(int numOfYears) {
-        for (Book book : books.values()) {
-            if (book.isOutdated(numOfYears)){
-                books.remove(book.getISBN());
+    public void removeOutdatedBooks(int numOfYears) {
+        Iterator<Map.Entry<String, Book>> iterator = books.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Book> entry = iterator.next();
+            Book book = entry.getValue();
+            if (book.isOutdated(numOfYears)) {
+                iterator.remove();
             }
         }
     }
 
-    public List<Book> returnOutdated(int numOfYears) {
-        List<Book> outdatedBooks = new ArrayList<>();
+    public HashMap<String, Book> returnOutdated(int numOfYears) {
+        HashMap<String, Book>  outdatedBooks = new HashMap<>();
         for (Book book : books.values()) {
             if (book.isOutdated(numOfYears)){
-                outdatedBooks.add(book);
+                outdatedBooks.put(book.getISBN(), book);
             }
         }
         return outdatedBooks;
@@ -76,6 +57,43 @@ public class Inventory {
     }
 
     public void reduceBookAmount(StockableBooks stockableBook, int amount){
-        stockableBook.setBookStock(stockableBook.getBookStock() - amount);
+        int newStock = stockableBook.getBookStock() - amount;
+        stockableBook.setBookStock(newStock);
     }
+
+    public void printInventory(HashMap<String, Book> books) {
+        System.out.println("######### Inventory #########");
+
+        if (getBooks().isEmpty()) {
+            System.out.println("No books found.");
+            return;
+        }
+
+        // Print header
+        System.out.printf("%-6s | %-25s | %-6s | %-8s | %-10s | %-15s%n",
+                "ISBN", "Title", "Year", "Price", "Type", "Extra Info");
+
+        System.out.println("------------------------------------------------------------------------");
+
+        for (Book book : books.values()) {
+            String type;
+            String extraInfo = "";
+
+            if (book instanceof StockableBooks) {
+                type = "PaperBook";
+                extraInfo = "Stock: " + ((StockableBooks) book).getBookStock();
+            } else if (book instanceof Ebook) {
+                type = "EBook";
+                extraInfo = "File: " + ((Ebook) book).getFileType();
+            } else if (book instanceof DemoBook) {
+                type = "DemoBook";
+                extraInfo = "Not for sale";
+            } else {
+                type = "Unknown";
+            }
+            System.out.printf("%-6s | %-25s | %-6d | %-8.2f | %-10s | %-15s%n",
+                    book.getISBN(), book.getTitle(), book.getYear(), book.getPrice(), type, extraInfo);
+        }
+    }
+
 }

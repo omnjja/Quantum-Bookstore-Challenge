@@ -1,6 +1,5 @@
 package bookPack;
 
-import interfaces.Ebooks;
 import interfaces.StockableBooks;
 
 public class PaperBook extends Book implements StockableBooks {

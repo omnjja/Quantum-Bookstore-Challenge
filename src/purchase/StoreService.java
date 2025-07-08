@@ -1,7 +1,6 @@
 package purchase;
 
 import bookPack.Book;
-import bookPack.Ebook;
 import interfaces.Ebooks;
 import interfaces.NotForSale;
 import interfaces.StockableBooks;
@@ -20,31 +19,39 @@ public class StoreService {
     public double returnPaidAmount(Book book , int quantity){
         return (book.getPrice() * quantity);
     }
-    public void buyBook(String ISBN, int quantity, String email, String address) {
+    public double buyBook(String ISBN, int quantity, String email, String address) {
         Book book = inventory.getSpecieficBook(ISBN);
         if (book == null) {
-            System.out.println("Book is not available");
-            return;
+            throw new UnsupportedOperationException("Book is not available");
         } else {
             switch (book) {
                 case NotForSale notForSale -> throw new UnsupportedOperationException("This type of book is not for sale");
                 case StockableBooks stockableBook -> {
                     if (stockableBook.getBookStock() < quantity) {
-                        throw new UnsupportedOperationException("Not enough books in the stock");
+                        throw new UnsupportedOperationException("Not enough books in the stock.");
                     } else {
+                        if (address == null) {
+                            throw new IllegalArgumentException("Shipping address must be provided for PaperBooks.");
+                        }
                         inventory.reduceBookAmount(stockableBook, quantity);
                         ShippingService shippingService = new ShippingService();
                         shippingService.shipBook(stockableBook , address);
-                        System.out.println(returnPaidAmount(book, quantity));
+                        return returnPaidAmount(book, quantity);
                     }
                 }
                 case Ebooks ebook -> {
+                    if (quantity > 1) {
+                        throw new UnsupportedOperationException("Can't buy multiple copies of an EBook");
+                    }
+                    if (email == null) {
+                        throw new IllegalArgumentException("Email must be provided for E-books.");
+                    }
                     EmailService emailService = new EmailService();
                     emailService.sendEmail(ebook, email);
-                    System.out.println(returnPaidAmount(book, 1));
+                    return returnPaidAmount(book, 1);
                 }
                 default -> {
-                    throw new IllegalStateException("Not valid book");
+                    throw new IllegalStateException("Not valid book.");
                 }
             }
         }

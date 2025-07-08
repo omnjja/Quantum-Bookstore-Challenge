@@ -8,8 +8,4 @@ public class DemoBook extends Book implements NotForSale {
         super(ISBN, title, year, price);
     }
 
-    @Override
-    public boolean notForSale() {
-        return false;
-    }
 }
