@@ -1,13 +1,16 @@
 package bookPack;
 
-public class PaperBook extends Book {
+import interfaces.Ebooks;
+import interfaces.StockableBooks;
+
+public class PaperBook extends Book implements StockableBooks {
     private int bookStock ;
 
     public PaperBook(int bookStock) {
         this.bookStock = bookStock;
     }
 
-    public PaperBook(String ISBN, String title, String year, double price, int bookStock) {
+    public PaperBook(String ISBN, String title, int year, double price, int bookStock) {
         super(ISBN, title, year, price);
         this.bookStock = bookStock;
     }

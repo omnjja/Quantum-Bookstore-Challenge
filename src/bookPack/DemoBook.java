@@ -1,18 +1,15 @@
 package bookPack;
 
-public class DemoBook extends Book {
+import interfaces.NotForSale;
 
-    private boolean isForSale ;
+public class DemoBook extends Book implements NotForSale {
 
-    public DemoBook() {
-        this.isForSale = false;
+    public DemoBook(String ISBN, String title, int year, double price) {
+        super(ISBN, title, year, price);
     }
 
-    public boolean isForSale() {
-        return isForSale;
-    }
-
-    public void setForSale(boolean forSale) {
-        isForSale = forSale;
+    @Override
+    public boolean notForSale() {
+        return false;
     }
 }

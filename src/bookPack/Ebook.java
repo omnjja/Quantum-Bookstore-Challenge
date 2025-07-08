@@ -1,9 +1,11 @@
 package bookPack;
 
-public class Ebook extends Book {
+import interfaces.Ebooks;
+
+public class Ebook extends Book implements Ebooks {
     private String fileType ;
 
-    public Ebook(String ISBN, String title, String year, double price, String fileType) {
+    public Ebook(String ISBN, String title, int year, double price, String fileType) {
         super(ISBN, title, year, price);
         this.fileType = fileType;
     }

@@ -1,6 +1,8 @@
 package bookPack;
 
-public class Book {
+import java.time.Year;
+
+public abstract class Book {
     private String ISBN;
     private String title;
     private int year;
@@ -47,14 +49,9 @@ public class Book {
         this.price = price;
     }
 
-    public boolean isOutdated(){
-        return (year < 2000) ;
+    public boolean isOutdated(int specificNumOfYears){
+        int year = Year.now().getValue();
+        return ((year - this.year) >= specificNumOfYears ) ;
     }
 
-    public Book getSpecieficBook(String ISBN){
-        if(this.ISBN.equals(ISBN)){
-            return this;
-        }
-        return null;
-    }
 }
